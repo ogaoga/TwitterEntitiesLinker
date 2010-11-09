@@ -21,10 +21,15 @@ ini_set('error_reporting', E_ALL);
 include_once('twitter_entities_linker.php');
 
 $tweets = json_decode(file_get_contents('testdata.json'));
+var_dump($tweets);
+$html = '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8" /></head><body>';
 foreach ( $tweets as $tweet ) {
-  var_dump($tweet->text);
+	$html .= '<div class="tweet">'."\n";
   $result = TwitterEntitiesLinker::getHtml($tweet);
-  //var_dump($result);
+	$html .= $result."\n";
+	$html .= '</div>'."\n";
 }
+$html .= '</body></html>';
+echo $html;
 
 ?>
