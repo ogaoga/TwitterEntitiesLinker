@@ -1,30 +1,30 @@
 <?php
+/**
+ * Test for Twitter Entities Linker class.
+ *
+ * PHP versions 5
+ *
+ * Copyright 2010, ogaoga.org
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2010, ogaoga.org
+ * @link          http://www.ogaoga.org/
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 
-// retrieve entities
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('error_reporting', E_ALL);
+
+include_once('twitter_entities_linker.php');
+
 $tweets = json_decode(file_get_contents('testdata2.json'));
 foreach ( $tweets as $tweet ) {
-  // each tweet 
-  $convertedEntities = array();
-  foreach ( $tweet->entities as $type => $entities ) {
-    foreach ( $entities as $entity ) {
-      $entity->type = $type;
-      $convertedEntities[] = $entity;
-    }
-  }
-  // sort entities
-  usort(&$convertedEntities,
-        function($a, $b) {
-          if ($a->indices > $b->indices) { return 1; }
-          else if ($a->indices < $b->indices) { return -1; }
-          else { return 0; }
-        });
-  //print_r($convertedEntities);
-  // 
-  foreach ($convertedEntities as $entity) {
-    
-    //var_dump(mb_substr($tweet->text, $entity->{0}, $entity->{1} - $entity->{0}, 'utf-8'));
-    var_dump($entity);
-  }
+  var_dump($tweet->text);
+  $result = TwitterEntitiesLinker::getHtml($tweet);
+  //var_dump($result);
 }
 
 ?>
