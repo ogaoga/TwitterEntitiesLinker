@@ -24,10 +24,10 @@ $tweets = json_decode(file_get_contents('testdata.json'));
 var_dump($tweets);
 $html = '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8" /></head><body>';
 foreach ( $tweets as $tweet ) {
-	$html .= '<div class="tweet">'."\n";
+  $html .= '<div class="tweet">'."\n";
   $result = TwitterEntitiesLinker::getHtml($tweet);
-	$html .= $result."\n";
-	$html .= '</div>'."\n";
+  $html .= $result."\n";
+  $html .= '</div>'."\n";
 }
 $html .= '</body></html>';
 echo $html;

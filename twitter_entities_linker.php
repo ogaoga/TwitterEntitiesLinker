@@ -17,7 +17,7 @@
 /**
  * Twitter Entities Linker class
  *
- * 
+ * usage:  TwitterEntitiesLinker::getHtml($tweet);
  *
  */
 class TwitterEntitiesLinker {
@@ -25,9 +25,10 @@ class TwitterEntitiesLinker {
   /**
    * get html source
    *
-   * @return 
+   * @param  a json decoded tweet object
+   * @return html source
    */
-	public static function getHtml($tweet) {
+  public static function getHtml($tweet) {
     $convertedEntities = array();
 
     // check entities data exists
@@ -45,68 +46,68 @@ class TwitterEntitiesLinker {
 
     // sort entities
     usort(&$convertedEntities,
-					"TwitterEntitiesLinker::sortFunction");
+          "TwitterEntitiesLinker::sortFunction");
 
     // split entities and texts
-		$pos = 0;
-		$entities = array();
+    $pos = 0;
+    $entities = array();
     foreach ($convertedEntities as $entity) {
-			// not entity
-			if ( $pos < $entity->indices[0] ) {
-				$substring = mb_substr($tweet->text,
-															 $pos,
-															 $entity->indices[0] - $pos,
-															 'utf-8');
-				$entities[] = array('text' => $substring, 
-														'data' => null);
-				$pos = $entity->indices[0];
-			}
-			// entity
-			$substring = mb_substr($tweet->text,
-														 $pos,
-														 $entity->indices[1] - $entity->indices[0],
-														 'utf-8');
-			$entities[] = array('text' => $substring, 
-													'data' => $entity);
-			$pos = $entity->indices[1];
-		}
-		// tail of not entity
-		$length = mb_strlen($tweet->text, 'utf-8');
-		if ( $pos < $length ) {
-			$substring = mb_substr($tweet->text,
-														 $pos,
-														 $length - $pos,
-														 'utf-8');
-			$entities[] = array('text' => $substring, 
-													'data' => null);
-		}
+      // not entity
+      if ( $pos < $entity->indices[0] ) {
+        $substring = mb_substr($tweet->text,
+                               $pos,
+                               $entity->indices[0] - $pos,
+                               'utf-8');
+        $entities[] = array('text' => $substring, 
+                            'data' => null);
+        $pos = $entity->indices[0];
+      }
+      // entity
+      $substring = mb_substr($tweet->text,
+                             $pos,
+                             $entity->indices[1] - $entity->indices[0],
+                             'utf-8');
+      $entities[] = array('text' => $substring, 
+                          'data' => $entity);
+      $pos = $entity->indices[1];
+    }
+    // tail of not entity
+    $length = mb_strlen($tweet->text, 'utf-8');
+    if ( $pos < $length ) {
+      $substring = mb_substr($tweet->text,
+                             $pos,
+                             $length - $pos,
+                             'utf-8');
+      $entities[] = array('text' => $substring, 
+                          'data' => null);
+    }
 
-		// replace
-		$html = "";
-		foreach ( $entities as $entity ) {
-			if ( $entity['data'] ) {
-				if ( $entity['data']->type == 'urls' ) {
-					$url = ($entity['data']->expanded_url) ? $entity['data']->expanded_url : $entity['data']->url;
-					$html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.$url.'</a>';
-				}
-				else if ( $entity['data']->type == 'hashtags' ) {
-					$text = $entity['data']->text;
-					$html .= '<a href="http://twitter.com/#!/search?q=%23'.$text.'" title="#'.$text.'" class="twitter-hashtag" rel="nofollow">#'.$text.'</a>';
-				}
-				else if ( $entity['data']->type == 'user_mentions' ) {
-					$screen_name = $entity['data']->screen_name;
-					$html .= '@<a class="twitter-atreply" data-screen-name="'.$screen_name.'" href="http://twitter.com/'.$screen_name.'" rel="nofollow">'.$screen_name.'</a>';
-				}
-				else {
-				}
-			}
-			else {
-				$html .= $entity['text'];
-			}
-		}
+    // replace
+    $html = "";
+    foreach ( $entities as $entity ) {
+      if ( $entity['data'] ) {
+        if ( $entity['data']->type == 'urls' ) {
+          $url = ($entity['data']->expanded_url) ? $entity['data']->expanded_url : $entity['data']->url;
+          $html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.$url.'</a>';
+        }
+        else if ( $entity['data']->type == 'hashtags' ) {
+          $text = $entity['data']->text;
+          $html .= '<a href="http://twitter.com/#!/search?q=%23'.$text.'" title="#'.$text.'" class="twitter-hashtag" rel="nofollow">#'.$text.'</a>';
+        }
+        else if ( $entity['data']->type == 'user_mentions' ) {
+          $screen_name = $entity['data']->screen_name;
+          $html .= '@<a class="twitter-atreply" data-screen-name="'.$screen_name.'" href="http://twitter.com/'.$screen_name.'" rel="nofollow">'.$screen_name.'</a>';
+        }
+        else {
+        }
+      }
+      else {
+        $html .= $entity['text'];
+      }
+    }
     // return 
     return $html;
-	}
+  }
 
   /**
    * sort function
@@ -115,11 +116,10 @@ class TwitterEntitiesLinker {
    * @param   data b
    * @return  1 or -1 or 0
    */
-	static private function sortFunction($a, $b)  {
-		if ($a->indices > $b->indices) { return 1; }
-		else if ($a->indices < $b->indices) { return -1; }
-		else { return 0; }
-	}
-
+  static private function sortFunction($a, $b)  {
+    if ($a->indices > $b->indices) { return 1; }
+    else if ($a->indices < $b->indices) { return -1; }
+    else { return 0; }
+  }
 }
 ?>
