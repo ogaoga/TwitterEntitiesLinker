@@ -20,7 +20,7 @@ ini_set('error_reporting', E_ALL);
 
 include_once('twitter_entities_linker.php');
 
-$tweets = json_decode(file_get_contents('testdata2.json'));
+$tweets = json_decode(file_get_contents('testdata.json'));
 foreach ( $tweets as $tweet ) {
   var_dump($tweet->text);
   $result = TwitterEntitiesLinker::getHtml($tweet);
