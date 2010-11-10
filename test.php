@@ -20,12 +20,17 @@ ini_set('error_reporting', E_ALL);
 
 include_once('twitter_entities_linker.php');
 
+$highlight = array('patterns'=>array('/og/',
+                                     '/test/',
+                                     '/日本/'),
+                   'replacements'=>array('<b>$0</b>',
+                                         '<i>$0</i>',
+                                         '<span style="color:red">$0</span>'));
 $tweets = json_decode(file_get_contents('testdata.json'));
-var_dump($tweets);
 $html = '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8" /></head><body>';
 foreach ( $tweets as $tweet ) {
   $html .= '<div class="tweet">'."\n";
-  $result = TwitterEntitiesLinker::getHtml($tweet);
+  $result = TwitterEntitiesLinker::getHtml($tweet, $highlight);
   $html .= $result."\n";
   $html .= '</div>'."\n";
 }

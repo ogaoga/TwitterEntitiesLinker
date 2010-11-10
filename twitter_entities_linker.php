@@ -25,10 +25,25 @@ class TwitterEntitiesLinker {
   /**
    * get html source
    *
-   * @param  a json decoded tweet object
+   * @param  $tweet : a json decoded tweet object
+   * @param  $highlight : set params if you want to highlight any text
+   *                      (optional)
+   *
+   * $highlight should be set with preg_replace params like the following:
+   *
+   *    $highlight = array('patterns'
+   *                         => array('/notice/i',
+   *                                  '/caution/i',
+   *                                  ...),
+   *                       'replacements'
+   *                         => array('<span class="notice">$0</span>',
+   *                                  '<b>$0</b>',
+   *                                  ...)
+   *                       );
+   *
    * @return html source
    */
-  public static function getHtml($tweet) {
+  public static function getHtml($tweet, $highlight = array()) {
     $convertedEntities = array();
 
     // check entities data exists
@@ -88,21 +103,21 @@ class TwitterEntitiesLinker {
       if ( $entity['data'] ) {
         if ( $entity['data']->type == 'urls' ) {
           $url = ($entity['data']->expanded_url) ? $entity['data']->expanded_url : $entity['data']->url;
-          $html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.$url.'</a>';
+          $html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.self::highlightText($url, $highlight).'</a>';
         }
         else if ( $entity['data']->type == 'hashtags' ) {
           $text = $entity['data']->text;
-          $html .= '<a href="http://twitter.com/#!/search?q=%23'.$text.'" title="#'.$text.'" class="twitter-hashtag" rel="nofollow">#'.$text.'</a>';
+          $html .= '<a href="http://twitter.com/#!/search?q=%23'.$text.'" title="#'.$text.'" class="twitter-hashtag" rel="nofollow">#'.self::highlightText($text, $highlight).'</a>';
         }
         else if ( $entity['data']->type == 'user_mentions' ) {
           $screen_name = $entity['data']->screen_name;
-          $html .= '@<a class="twitter-atreply" data-screen-name="'.$screen_name.'" href="http://twitter.com/'.$screen_name.'" rel="nofollow">'.$screen_name.'</a>';
+          $html .= '@<a class="twitter-atreply" data-screen-name="'.$screen_name.'" href="http://twitter.com/'.$screen_name.'" rel="nofollow">'.self::highlightText($screen_name, $highlight).'</a>';
         }
         else {
         }
       }
       else {
-        $html .= $entity['text'];
+        $html .= self::highlightText($entity['text'], $highlight);
       }
     }
     // return 
@@ -120,6 +135,18 @@ class TwitterEntitiesLinker {
     if ($a->indices > $b->indices) { return 1; }
     else if ($a->indices < $b->indices) { return -1; }
     else { return 0; }
+  }
+
+  /**
+   * highlight text
+   */
+  static private function highlightText($text, $highlight) {
+    if ( $highlight ) {
+      $text = preg_replace($highlight['patterns'],
+                           $highlight['replacements'],
+                           $text);
+    }
+    return $text;
   }
 }
 ?>
