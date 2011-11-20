@@ -102,8 +102,9 @@ class TwitterEntitiesLinker {
     foreach ( $entities as $entity ) {
       if ( $entity['data'] ) {
         if ( $entity['data']->type == 'urls' ) {
-          $url = ($entity['data']->display_url) ? $entity['data']->display_url : (($entity['data']->expanded_url) ? $entity['data']->expanded_url : $entity['data']->url);
-          $html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.self::highlightText($url, $highlight).'</a>';
+          $url = ($entity['data']->expanded_url) ? $entity['data']->expanded_url : $entity['data']->url;
+          $display_url = ($entity['data']->display_url) ? $entity['data']->display_url : $entity['data']->url;
+          $html .= '<a href="'.$url.'" target="_blank" rel="nofollow" class="twitter-timeline-link">'.self::highlightText($display_url, $highlight).'</a>';
         }
         else if ( $entity['data']->type == 'hashtags' ) {
           $text = $entity['data']->text;
