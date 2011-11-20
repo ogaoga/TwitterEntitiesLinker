@@ -113,6 +113,10 @@ class TwitterEntitiesLinker {
           $screen_name = $entity['data']->screen_name;
           $html .= '@<a class="twitter-atreply" data-screen-name="'.$screen_name.'" href="http://twitter.com/'.$screen_name.'" rel="nofollow">'.self::highlightText($screen_name, $highlight).'</a>';
         }
+        else if ( $entity['data']->type == 'media' ) {
+          $media_url = $entity['data']->display_url;
+          $html .= '<a href="'.$entity['data']->expanded_url.'" target="_blank" rel="nofollow" class="twitter-media-link">'.self::highlightText($media_url, $highlight).'</a>';
+        }
         else {
         }
       }
